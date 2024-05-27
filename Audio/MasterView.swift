@@ -77,7 +77,7 @@ struct MasterView: View {
                         .multilineTextAlignment(.center)
                 }
             }
-            .navigationTitle("Menu Principal")
+            .navigationTitle("Laboratório IA")
             .onAppear {
                 self.audioManager.setupAudioSession()
                 self.audioManager.requestMicrophonePermission()
