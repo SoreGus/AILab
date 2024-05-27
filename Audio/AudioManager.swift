@@ -127,6 +127,9 @@ class AudioManager: NSObject, ObservableObject, AVAudioRecorderDelegate {
         
         api.trainNN(audioFiles: audioFiles, labels: labels) { response in
             DispatchQueue.main.async {
+                if response == "Treinamento concluído com sucesso!" {
+                    self.deleteAllFiles()
+                }
                 completion(response)
             }
         }
