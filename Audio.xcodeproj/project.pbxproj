@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4005E6622C062F46005860CF /* LiveClassificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4005E6612C062F46005860CF /* LiveClassificationView.swift */; };
 		405323472C01612200138A8B /* AudioApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 405323462C01612200138A8B /* AudioApp.swift */; };
 		405323492C01612200138A8B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 405323482C01612200138A8B /* ContentView.swift */; };
 		4053234B2C01612300138A8B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4053234A2C01612300138A8B /* Assets.xcassets */; };
@@ -18,6 +19,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4005E6612C062F46005860CF /* LiveClassificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveClassificationView.swift; sourceTree = "<group>"; };
 		405323432C01612200138A8B /* Audio.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Audio.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		405323462C01612200138A8B /* AudioApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioApp.swift; sourceTree = "<group>"; };
 		405323482C01612200138A8B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -73,6 +75,7 @@
 				4053234C2C01612300138A8B /* Audio.entitlements */,
 				4053234D2C01612300138A8B /* Preview Content */,
 				407F2F8E2C050C2800988322 /* MasterView.swift */,
+				4005E6612C062F46005860CF /* LiveClassificationView.swift */,
 			);
 			path = Audio;
 			sourceTree = "<group>";
@@ -164,6 +167,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				407F2F8F2C050C2800988322 /* MasterView.swift in Sources */,
+				4005E6622C062F46005860CF /* LiveClassificationView.swift in Sources */,
 				407F2F8B2C049B1900988322 /* AudioClassifierAPI.swift in Sources */,
 				405323562C01645100138A8B /* AudioManager.swift in Sources */,
 				405323492C01612200138A8B /* ContentView.swift in Sources */,

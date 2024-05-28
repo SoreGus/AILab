@@ -12,9 +12,12 @@ class AudioManager: NSObject, ObservableObject, AVAudioRecorderDelegate {
     let userDefaultsKey = "lastSavedNNName"
     var nnName: String?
 
-    func startRecording(duration: TimeInterval) {
+    func startRecording(duration: TimeInterval, fileURL: URL? = nil) {
         let timestamp = Date().timeIntervalSince1970
-        let audioFilename = getDocumentsDirectory().appendingPathComponent(selectedFolder).appendingPathComponent("\(timestamp).wav")
+        var audioFilename = getDocumentsDirectory().appendingPathComponent(selectedFolder).appendingPathComponent("\(timestamp).wav")
+        if let fileURL {
+            audioFilename = fileURL
+        }
 
         let settings: [String: Any] = [
             AVFormatIDKey: kAudioFormatLinearPCM,
@@ -189,5 +192,13 @@ class AudioManager: NSObject, ObservableObject, AVAudioRecorderDelegate {
 
     func loadLastSavedNN() -> String? {
         return UserDefaults.standard.string(forKey: userDefaultsKey)
+    }
+
+    func classify(audioFile: URL, completion: @escaping (Result<[String: Any], Error>) -> Void) {
+        api.classify(audioFile: audioFile) { result in
+            DispatchQueue.main.async {
+                completion(result)
+            }
+        }
     }
 }

@@ -4,6 +4,7 @@ struct MasterView: View {
     @StateObject private var audioManager = AudioManager()
     @State private var showClassifyView = false
     @State private var showContentView = false
+    @State private var showLiveClassificationView = false
     @State private var nnName = ""
     @State private var responseMessage: String?
     @State private var showAlert = false  // Estado para controlar a exibição do alerta
@@ -38,6 +39,10 @@ struct MasterView: View {
 
                         NavigationLink(destination: ContentView()) {
                             Text("Treinar")
+                        }
+
+                        NavigationLink(destination: LiveClassificationView()) {
+                            Text("Classificação ao vivo")
                         }
 
                         Button(action: {

@@ -94,7 +94,7 @@ class AudioClassifierAPI {
         }.resume()
     }
     
-    func classify(audioFile: URL, completion: @escaping (Result<Int, Error>) -> Void) {
+    func classify(audioFile: URL, completion: @escaping (Result<[String: Any], Error>) -> Void) {
         guard let url = URL(string: "\(baseURL)/classify") else { return }
         
         var request = URLRequest(url: url)
@@ -139,9 +139,10 @@ class AudioClassifierAPI {
             
             do {
                 if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-                   let classIndex = json["class_index"] as? Int {
-                    print("classify Response: \(classIndex)")
-                    completion(.success(classIndex))
+                   let classIndex = json["class"] as? Int, let confidence = json["confidence"] as? Float {
+                    print("classify Response: class -> \(classIndex) | confidence -> \(confidence)")
+                    let resultDict = ["class": classIndex, "confidence": confidence]
+                    completion(.success(resultDict))
                 } else {
                     let error = NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"])
                     print("Error: \(error.localizedDescription)")
