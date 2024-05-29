@@ -8,21 +8,22 @@
 
 /* Begin PBXBuildFile section */
 		4005E6622C062F46005860CF /* LiveClassificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4005E6612C062F46005860CF /* LiveClassificationView.swift */; };
+		4005E6642C06B1A4005860CF /* DataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4005E6632C06B1A4005860CF /* DataView.swift */; };
+		4005E6662C06BF35005860CF /* TrainingResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4005E6652C06BF35005860CF /* TrainingResultView.swift */; };
 		405323472C01612200138A8B /* AudioApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 405323462C01612200138A8B /* AudioApp.swift */; };
-		405323492C01612200138A8B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 405323482C01612200138A8B /* ContentView.swift */; };
 		4053234B2C01612300138A8B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4053234A2C01612300138A8B /* Assets.xcassets */; };
 		4053234F2C01612300138A8B /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4053234E2C01612300138A8B /* Preview Assets.xcassets */; };
 		405323562C01645100138A8B /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 405323552C01645100138A8B /* AudioManager.swift */; };
 		407F2F8B2C049B1900988322 /* AudioClassifierAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 407F2F8A2C049B1900988322 /* AudioClassifierAPI.swift */; };
-		407F2F8D2C04A1C400988322 /* ClassifyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 407F2F8C2C04A1C400988322 /* ClassifyView.swift */; };
 		407F2F8F2C050C2800988322 /* MasterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 407F2F8E2C050C2800988322 /* MasterView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		4005E6612C062F46005860CF /* LiveClassificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveClassificationView.swift; sourceTree = "<group>"; };
+		4005E6632C06B1A4005860CF /* DataView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataView.swift; sourceTree = "<group>"; };
+		4005E6652C06BF35005860CF /* TrainingResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainingResultView.swift; sourceTree = "<group>"; };
 		405323432C01612200138A8B /* Audio.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Audio.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		405323462C01612200138A8B /* AudioApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioApp.swift; sourceTree = "<group>"; };
-		405323482C01612200138A8B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		4053234A2C01612300138A8B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4053234C2C01612300138A8B /* Audio.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Audio.entitlements; sourceTree = "<group>"; };
 		4053234E2C01612300138A8B /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -30,7 +31,6 @@
 		405323572C01647800138A8B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		407F2F852C045D4E00988322 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.4.sdk/System/Library/Frameworks/Accelerate.framework; sourceTree = DEVELOPER_DIR; };
 		407F2F8A2C049B1900988322 /* AudioClassifierAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioClassifierAPI.swift; sourceTree = "<group>"; };
-		407F2F8C2C04A1C400988322 /* ClassifyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassifyView.swift; sourceTree = "<group>"; };
 		407F2F8E2C050C2800988322 /* MasterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasterView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -65,17 +65,17 @@
 		405323452C01612200138A8B /* Audio */ = {
 			isa = PBXGroup;
 			children = (
+				4005E6652C06BF35005860CF /* TrainingResultView.swift */,
 				405323572C01647800138A8B /* Info.plist */,
 				405323462C01612200138A8B /* AudioApp.swift */,
 				407F2F8A2C049B1900988322 /* AudioClassifierAPI.swift */,
-				405323482C01612200138A8B /* ContentView.swift */,
-				407F2F8C2C04A1C400988322 /* ClassifyView.swift */,
 				405323552C01645100138A8B /* AudioManager.swift */,
 				4053234A2C01612300138A8B /* Assets.xcassets */,
 				4053234C2C01612300138A8B /* Audio.entitlements */,
 				4053234D2C01612300138A8B /* Preview Content */,
 				407F2F8E2C050C2800988322 /* MasterView.swift */,
 				4005E6612C062F46005860CF /* LiveClassificationView.swift */,
+				4005E6632C06B1A4005860CF /* DataView.swift */,
 			);
 			path = Audio;
 			sourceTree = "<group>";
@@ -170,9 +170,9 @@
 				4005E6622C062F46005860CF /* LiveClassificationView.swift in Sources */,
 				407F2F8B2C049B1900988322 /* AudioClassifierAPI.swift in Sources */,
 				405323562C01645100138A8B /* AudioManager.swift in Sources */,
-				405323492C01612200138A8B /* ContentView.swift in Sources */,
 				405323472C01612200138A8B /* AudioApp.swift in Sources */,
-				407F2F8D2C04A1C400988322 /* ClassifyView.swift in Sources */,
+				4005E6662C06BF35005860CF /* TrainingResultView.swift in Sources */,
+				4005E6642C06B1A4005860CF /* DataView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

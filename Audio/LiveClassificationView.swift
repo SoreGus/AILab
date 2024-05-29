@@ -3,106 +3,96 @@ import AVFoundation
 
 struct LiveClassificationView: View {
     @StateObject private var audioManager = AudioManager()
-    @State private var isClassifying = false
-    @State private var classificationResult = "Categoria"
-    @State private var backgroundColor = Color.white
-    @State private var timer: Timer?
+    @State private var isRecording = false
+    @State private var classificationResult: String?
+    @State private var classificationConfidence: Double?
+    @State private var classificationColor: Color = Color(.systemBackground)
     @State private var errorMessage: String?
+    @State private var isErrorPresented = false
+
+    let recordingDuration: TimeInterval = 3.0
 
     var body: some View {
-        ZStack {
-            backgroundColor.edgesIgnoringSafeArea(.all)
-            
-            VStack {
-                Text(classificationResult)
-                    .font(.largeTitle)
-                    .foregroundColor(.black)
+        VStack {
+            Text(classificationResult ?? "Categoria")
+                .font(.largeTitle)
+                .padding()
+                .background(classificationColor)
+                .cornerRadius(10)
+                .padding()
+
+            if let confidence = classificationConfidence, let result = classificationResult {
+                Text("Classificação: \(result) com \(Int(confidence * 100))% de confiança")
+                    .font(.headline)
                     .padding()
-                
-                Button(action: {
-                    if isClassifying {
-                        stopClassification()
-                    } else {
-                        startClassification()
-                    }
-                }) {
-                    Text(isClassifying ? "Parar classificação" : "Iniciar classificação ao vivo")
-                        .bold()
-                        .padding()
-                        .background(isClassifying ? Color.red : Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                }
-                
-                Spacer()
-                
-                if let errorMessage = errorMessage {
-                    Text(errorMessage)
-                        .foregroundColor(.red)
-                        .padding()
-                }
+                    .foregroundColor(confidence >= 0.8 ? .primary : .red)
             }
-            .padding()
+
+            Button(action: {
+                if isRecording {
+                    stopLiveClassification()
+                } else {
+                    startLiveClassification()
+                }
+            }) {
+                Text(isRecording ? "Parar Classificação" : "Iniciar Classificação ao Vivo")
+                    .bold()
+                    .padding()
+                    .background(isRecording ? Color.red : Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+            }
+        }
+        .padding()
+        .background(classificationColor)
+        .alert(isPresented: $isErrorPresented) {
+            Alert(title: Text("Erro"), message: Text(errorMessage ?? "Erro desconhecido"), dismissButton: .default(Text("OK")))
         }
     }
-    
-    private func startClassification() {
-        isClassifying = true
-        backgroundColor = Color.white
-        classificationResult = "Categoria"
-        errorMessage = nil
-        
-        timer = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: true) { _ in
-            classifyAudio()
-        }
+
+    private func startLiveClassification() {
+        isRecording = true
+        classificationResult = nil
+        classificationConfidence = nil
+        classificationColor = Color(.systemBackground)
+        recordAndClassify()
     }
-    
-    private func stopClassification() {
-        isClassifying = false
-        timer?.invalidate()
-        timer = nil
-        backgroundColor = Color.white
-        classificationResult = "Categoria"
+
+    private func stopLiveClassification() {
+        isRecording = false
         audioManager.stopRecording()
     }
-    
-    private func classifyAudio() {
-        let audioFilename = audioManager.getDocumentsDirectory().appendingPathComponent("live_classification.wav")
-        audioManager.startRecording(duration: 3, fileURL: audioFilename)
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3.1) {
-            self.audioManager.stopRecording()
-            self.audioManager.classify(audioFile: audioFilename) { result in
-                switch result {
-                case .success(let result):
-                    let classIndex = result["class"] as? Int ?? -1
-                    let confidence = result["confidence"] as? Float ?? Float(-1)
-                    switch classIndex {
-                    case 0:
-                        if confidence > 0.9 {
-                            self.backgroundColor = Color.green
-                            self.classificationResult = "Classe 0"
-                        } else {
-                            self.backgroundColor = Color.white
-                            self.classificationResult = "Classe 0 : \(confidence)"
+
+    private func recordAndClassify() {
+        guard isRecording else { return }
+
+        audioManager.startRecording(duration: recordingDuration, isLiveClassification: true) {
+            if let lastFile = self.audioManager.getLastRecordedFileURL(isLiveClassification: true) {
+                self.audioManager.classify(audioFile: lastFile) { result in
+                    switch result {
+                    case .success(let response):
+                        if let classIndex = response["class"] as? Int,
+                           let confidence = response["confidence"] as? Float {
+                            self.classificationConfidence = Double(confidence)
+                            self.classificationResult = "Classe \(classIndex)"
+                            if confidence >= 0.8 {
+                                self.classificationColor = classIndex == 0 ? .green : .blue
+                            } else {
+                                self.classificationColor = Color(.systemBackground)
+                            }
+                            
+                            // Exibir mensagens de callback para o usuário
+                            if confidence < 0.8 {
+                                self.classificationResult = "Classe \(classIndex) com \(Int(confidence * 100))% de confiança"
+                            }
                         }
-                    case 1:
-                        if confidence > 0.9 {
-                            self.backgroundColor = Color.blue
-                            self.classificationResult = "Classe 1"
-                        } else {
-                            self.backgroundColor = Color.white
-                            self.classificationResult = "Classe 1 : \(confidence)"
-                        }
-                    case -1:
-                        self.backgroundColor = Color.white
-                        self.classificationResult = "None"
-                    default:
-                        break
+                    case .failure(let error):
+                        self.errorMessage = "Erro na classificação: \(error.localizedDescription)"
+                        self.isErrorPresented = true
                     }
-                case .failure(let error):
-                    self.errorMessage = "Erro na classificação: \(error.localizedDescription)"
-                    self.stopClassification()
+
+                    // Inicia a próxima gravação
+                    self.recordAndClassify()
                 }
             }
         }

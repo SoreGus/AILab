@@ -1,7 +1,7 @@
 import Foundation
 import AVFoundation
 
-class AudioManager: NSObject, ObservableObject, AVAudioRecorderDelegate {
+class AudioManager: NSObject, ObservableObject, AVAudioRecorderDelegate, AVAudioPlayerDelegate {
     var audioRecorder: AVAudioRecorder?
     var audioPlayer: AVAudioPlayer?
     @Published var isRecording = false
@@ -11,12 +11,16 @@ class AudioManager: NSObject, ObservableObject, AVAudioRecorderDelegate {
 
     let userDefaultsKey = "lastSavedNNName"
     var nnName: String?
+    var recordingCompletionHandler: (() -> Void)?
 
-    func startRecording(duration: TimeInterval, fileURL: URL? = nil) {
+    func startRecording(duration: TimeInterval, isLiveClassification: Bool = false, completion: @escaping () -> Void) {
         let timestamp = Date().timeIntervalSince1970
-        var audioFilename = getDocumentsDirectory().appendingPathComponent(selectedFolder).appendingPathComponent("\(timestamp).wav")
-        if let fileURL {
-            audioFilename = fileURL
+        let audioFilename: URL
+
+        if isLiveClassification {
+            audioFilename = getDocumentsDirectory().appendingPathComponent("temp").appendingPathComponent("classification_audio.wav")
+        } else {
+            audioFilename = getDocumentsDirectory().appendingPathComponent(selectedFolder).appendingPathComponent("\(timestamp).wav")
         }
 
         let settings: [String: Any] = [
@@ -36,6 +40,7 @@ class AudioManager: NSObject, ObservableObject, AVAudioRecorderDelegate {
             audioRecorder?.record(forDuration: duration)
             isRecording = true
             isSaved = false
+            recordingCompletionHandler = completion
             print("Recording started: \(audioFilename)")
         } catch {
             print("Failed to start recording: \(error.localizedDescription)")
@@ -50,15 +55,35 @@ class AudioManager: NSObject, ObservableObject, AVAudioRecorderDelegate {
         }
     }
 
-    func playRecording() {
-        guard let audioFilename = getLastRecordedFileURL() else { return }
+    func playAudio(fileURL: URL) {
         do {
-            audioPlayer = try AVAudioPlayer(contentsOf: audioFilename)
+            audioPlayer = try AVAudioPlayer(contentsOf: fileURL)
+            audioPlayer?.delegate = self
             audioPlayer?.prepareToPlay()
             audioPlayer?.play()
-            print("Playing recording: \(audioFilename)")
+            print("Playing audio: \(fileURL)")
         } catch {
-            print("Failed to play recording: \(error.localizedDescription)")
+            print("Failed to play audio: \(error.localizedDescription)")
+        }
+    }
+
+    func stopPlaying() {
+        if let audioPlayer = audioPlayer, audioPlayer.isPlaying {
+            audioPlayer.stop()
+            DispatchQueue.main.async {
+                self.objectWillChange.send()
+            }
+            print("Audio stopped")
+        }
+    }
+
+    func getAudioDuration(fileURL: URL) -> TimeInterval {
+        do {
+            let audioPlayer = try AVAudioPlayer(contentsOf: fileURL)
+            return audioPlayer.duration
+        } catch {
+            print("Failed to get audio duration: \(error.localizedDescription)")
+            return 0.0
         }
     }
 
@@ -77,10 +102,22 @@ class AudioManager: NSObject, ObservableObject, AVAudioRecorderDelegate {
             print("Recording finished successfully")
             isRecording = false
             isSaved = true
+            recordingCompletionHandler?()
         } else {
             print("Recording failed")
             isRecording = false
             isSaved = false
+            recordingCompletionHandler?()
+        }
+        DispatchQueue.main.async {
+            self.objectWillChange.send()
+        }
+    }
+
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        print("Playback finished")
+        DispatchQueue.main.async {
+            self.objectWillChange.send()
         }
     }
 
@@ -107,18 +144,12 @@ class AudioManager: NSObject, ObservableObject, AVAudioRecorderDelegate {
         self.isSaved = false
     }
 
-    func getLastRecordedFileURL() -> URL? {
-        let directoryURL = getDocumentsDirectory().appendingPathComponent(selectedFolder)
-        do {
-            let files = try FileManager.default.contentsOfDirectory(at: directoryURL, includingPropertiesForKeys: nil)
-            let sortedFiles = files.sorted { $0.lastPathComponent.compare($1.lastPathComponent) == .orderedDescending }
-            if let lastFile = sortedFiles.first {
-                return lastFile
-            }
-        } catch {
-            print("Failed to list files: \(error.localizedDescription)")
+    func getLastRecordedFileURL(isLiveClassification: Bool = false) -> URL? {
+        if isLiveClassification {
+            return getDocumentsDirectory().appendingPathComponent("temp").appendingPathComponent("classification_audio.wav")
+        } else {
+            return getDocumentsDirectory().appendingPathComponent(selectedFolder).appendingPathComponent("classification_audio.wav")
         }
-        return nil
     }
 
     func trainModel(completion: @escaping (String?) -> Void) {
@@ -138,7 +169,7 @@ class AudioManager: NSObject, ObservableObject, AVAudioRecorderDelegate {
         }
     }
     
-    private func getAllFiles(from folder: String) -> [URL] {
+    func getAllFiles(from folder: String) -> [URL] {
         let directoryURL = getDocumentsDirectory().appendingPathComponent(folder)
         do {
             let files = try FileManager.default.contentsOfDirectory(at: directoryURL, includingPropertiesForKeys: nil)
