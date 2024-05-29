@@ -129,9 +129,14 @@ struct DataView: View {
             if self.remainingTime > 0 {
                 self.remainingTime -= 1
             } else {
-                self.stopTimer()
+                self.stopRecordingAndTimer()
             }
         }
+    }
+
+    private func stopRecordingAndTimer() {
+        audioManager.stopRecording()
+        self.stopTimer()
     }
 
     private func stopTimer() {
